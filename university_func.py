@@ -1,3 +1,5 @@
+from data import Applicant
+
 def mean_score(a: int, b: int, c: int) -> float:
     """Just simple average from 3 numbers"""
     mean = (a + b + c) / 3
@@ -44,105 +46,17 @@ def sort_output_func(b: int, applicants_dict: dict) -> list:
     return message_lst
 
 
-def read_file() -> list:
-    """Read file, for every applicant make dict with needed date, make a list with all dict"""
-    applicants_lst = []
-    with open('applicant_list.txt', 'r') as file:
-        applicants = file.readlines()
-        for line in applicants:
-            applicants_dict = dict()
-            line = line.split()
-            name = ' '.join(line[0:2])
-            score = float(line[2])
-            first_choice = line[3]
-            second_choice = line[4]
-            third_choice = line[5]
-            applicants_dict.update({
-                'name': name,
-                'GPA': score,
-                'first_choice': first_choice,
-                'second_choice': second_choice,
-                'third_choice': third_choice
-            })
-            applicants_lst.append(applicants_dict)
-
-    return applicants_lst
-
-
 def sort_read_file(applicants_lst: list) -> list:
     """Sort by name and next by GPA"""
-    applicants_name_lst = sorted(applicants_lst, key=lambda x: x['name'])[::-1]
-    applicants_sorted_lst = sorted(applicants_name_lst, key=lambda x: x['GPA'])[::-1]
+    applicants_name_lst = sorted(applicants_lst, key=lambda x: x.name, reverse=True)
+    physics_sorted_lst = sorted(applicants_name_lst, key=lambda x: x.physic_score)[::-1]
+    chemistry_sorted_lst = sorted(applicants_name_lst, key=lambda x: x.chemistry_score)[::-1]
+    math_sorted_lst = sorted(applicants_name_lst, key=lambda x: x.math_score)[::-1]
+    computer_science = sorted(applicants_name_lst, key=lambda x: x.computer_science)[::-1]
+    applicants_sorted_lst = [physics_sorted_lst, chemistry_sorted_lst, math_sorted_lst, computer_science]
     return applicants_sorted_lst
 
 
-# def choice_list(applicants_lst: list):
-#     """Make 3 dict with departments according to applicant priority choice"""
-#
-#     first_choice = {'Biotech': [],
-#                    'Chemistry': [],
-#                    'Engineering': [],
-#                    'Mathematics': [],
-#                    'Physics': []
-#                    }
-#     second_choice = {'Biotech': [],
-#                    'Chemistry': [],
-#                    'Engineering': [],
-#                    'Mathematics': [],
-#                    'Physics': []
-#                    }
-#     third_choice = {'Biotech': [],
-#                    'Chemistry': [],
-#                    'Engineering': [],
-#                    'Mathematics': [],
-#                    'Physics': []
-#                    }
-#
-#     for applicant in applicants_lst:
-#         name_gpa = f"{applicant['name']} {applicant['GPA']}"
-#         if applicant['first_choice'] in first_choice:
-#             first_choice[applicant['choice_num']].append(name_gpa)
-#         if applicant['second_choice'] in second_choice:
-#             second_choice[applicant['choice_num']].append(name_gpa)
-#         if applicant['third_choice'] in third_choice:
-#             third_choice[applicant['choice_num']].append(name_gpa)
-#
-#     return first_choice, second_choice, third_choice
-
-
-# def new_sort_applicants(applicants_sorted_lst: list, c: int) -> dict:
-#
-#     departments = {'Biotech': [],
-#                    'Chemistry': [],
-#                    'Engineering': [],
-#                    'Mathematics': [],
-#                    'Physics': []
-#                    }
-#     added_applicants = []
-#
-#     for applicant in applicants_sorted_lst:
-#         if applicant not in added_applicants:
-#             if len(departments[applicant['first_choice']]) < c:
-#                 departments[applicant['first_choice']].append(applicant)
-#                 added_applicants.append(applicant)
-#
-#     for applicant in applicants_sorted_lst:
-#         if applicant not in added_applicants:
-#             if len(departments[applicant['second_choice']]) < c:
-#                 departments[applicant['second_choice']].append(applicant)
-#                 added_applicants.append(applicant)
-#
-#     for applicant in applicants_sorted_lst:
-#         if applicant not in added_applicants:
-#             if len(departments[applicant['third_choice']]) < c:
-#                 departments[applicant['third_choice']].append(applicant)
-#                 added_applicants.append(applicant)
-#
-#     # sort lists inside departments dict according to GPA
-#     for applicants_lst in departments.values():
-#         applicants_lst.sort(key=lambda x: x['GPA'], reverse=True)
-#
-#     return departments
 
 
 
