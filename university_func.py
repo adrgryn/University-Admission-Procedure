@@ -49,11 +49,13 @@ def sort_output_func(b: int, applicants_dict: dict) -> list:
 def sort_read_file(applicants_lst: list) -> list:
     """Sort by name and next by GPA"""
     applicants_name_lst = sorted(applicants_lst, key=lambda x: x.name, reverse=True)
-    physics_sorted_lst = sorted(applicants_name_lst, key=lambda x: x.physic_score)[::-1]
+    physics_sorted_lst = sorted(applicants_name_lst, key=lambda x: x.physics_score)[::-1]
     chemistry_sorted_lst = sorted(applicants_name_lst, key=lambda x: x.chemistry_score)[::-1]
-    math_sorted_lst = sorted(applicants_name_lst, key=lambda x: x.math_score)[::-1]
-    computer_science = sorted(applicants_name_lst, key=lambda x: x.computer_science)[::-1]
-    applicants_sorted_lst = [physics_sorted_lst, chemistry_sorted_lst, math_sorted_lst, computer_science]
+    biotech_sorted_lst = sorted(applicants_name_lst, key=lambda x: x.biotech_score)[::-1]
+    math_sorted_lst = sorted(applicants_name_lst, key=lambda x: x.mathematics_score)[::-1]
+    computer_science = sorted(applicants_name_lst, key=lambda x: x.engineering_score)[::-1]
+    applicants_sorted_lst = [physics_sorted_lst, chemistry_sorted_lst, biotech_sorted_lst, math_sorted_lst,
+                             computer_science]
     return applicants_sorted_lst
 
 
