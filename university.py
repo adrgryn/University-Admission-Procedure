@@ -9,3 +9,4 @@ if __name__ == '__main__':
     applicants_sorted_lst = university_func.sort_read_file(applicants_unsorted_lst)
     departments = data.new_sort_applicants(applicants_sorted_lst, c)
     data.save_to_file(departments)
+

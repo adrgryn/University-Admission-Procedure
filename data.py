@@ -10,6 +10,7 @@ department_file_mapping = {
         "Physics": "physics.txt",
     }
 
+
 @dataclass(slots=True)
 class Applicant:
     """Class for keeping track all applicants datas"""
@@ -20,6 +21,7 @@ class Applicant:
     biotech_score: float
     mathematics_score: float
     engineering_score: float
+    special_exam_score: float
     first_choice: str
     second_choice: str
     third_choice: str
@@ -38,14 +40,15 @@ def read_file() -> list:
             biotech_score = (float(line[3]) + float(line[2])) / 2  # mean of physic and chemistry score
             mathematics_score = float(line[4])
             engineering_score = (float(line[5]) + float(line[4])) / 2  # mean of computer and math score
-            first_choice = line[6]
-            second_choice = line[7]
-            third_choice = line[8]
+            special_exam_score = float(line[6])
+            first_choice = line[7]
+            second_choice = line[8]
+            third_choice = line[9]
             applicants_lst.append(Applicant(name, physics_score, chemistry_score, biotech_score, mathematics_score,
-                                            engineering_score, first_choice, second_choice, third_choice))
+                                            engineering_score, special_exam_score, first_choice, second_choice,
+                                            third_choice))
 
     return applicants_lst
-
 
 
 def new_sort_applicants(applicants_sorted_lst: list, c: int) -> dict:
@@ -62,7 +65,7 @@ def new_sort_applicants(applicants_sorted_lst: list, c: int) -> dict:
     department_lst = ['Physics', 'Chemistry', 'Biotech', 'Mathematics', 'Engineering']
 
     def choice(index: int, choice: str) -> None:
-        """Take first N applicants by their first choice form sorted list of each department
+        """Take first N applicants by their  choice form sorted list of each department
         (chosen by index from list above) and place in departments dict, also check if there aren't
          same applicants in different departments"""
 
@@ -85,7 +88,7 @@ def new_sort_applicants(applicants_sorted_lst: list, c: int) -> dict:
     for department, applicants_lst in departments.items():
         score = f"{department.lower()}_score"
         applicants_lst.sort(key=lambda x: x.name)
-        applicants_lst.sort(key=lambda x: getattr(x, score), reverse=True)
+        applicants_lst.sort(key=lambda x: max(x.special_exam_score, getattr(x, score)), reverse=True)
 
     return departments
 
@@ -113,5 +116,8 @@ def save_to_file(departments: dict):
             for applicant in applicants:
                 # Check if the applicant name is not already in the file
                 if applicant.name not in applicant_lst:
-                    applicants_file.write(f'{applicant.name} {getattr(applicant, department.lower() + "_score")}\n')
+                    if getattr(applicant, department.lower() + "_score") > applicant.special_exam_score:
+                        applicants_file.write(f'{applicant.name} {getattr(applicant, department.lower() + "_score")}\n')
+                    else:
+                        applicants_file.write(f'{applicant.name} {applicant.special_exam_score}\n')
 
