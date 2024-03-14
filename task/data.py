@@ -1,17 +1,17 @@
 import io
 from dataclasses import dataclass
-
+import os
 
 department_file_mapping = {
-        "Biotech": "biotech.txt",
-        "Chemistry": "chemistry.txt",
-        "Engineering": "engineering.txt",
-        "Mathematics": "mathematics.txt",
-        "Physics": "physics.txt",
-    }
+    "Biotech": "biotech.txt",
+    "Chemistry": "chemistry.txt",
+    "Engineering": "engineering.txt",
+    "Mathematics": "mathematics.txt",
+    "Physics": "physics.txt",
+}
 
 
-@dataclass(slots=True)
+@dataclass(frozen=True, slots=True)
 class Applicant:
     """Class for keeping track all applicants datas"""
 
@@ -25,6 +25,11 @@ class Applicant:
     first_choice: str
     second_choice: str
     third_choice: str
+
+    # def __hash__(self):
+    #     return hash((self.name, self.physics_score, self.chemistry_score, self.biotech_score, self.mathematics_score,
+    #                  self.engineering_score, self.special_exam_score, self.first_choice, self.second_choice,
+    #                  self.third_choice))
 
 
 def read_file() -> list:
@@ -52,43 +57,26 @@ def read_file() -> list:
 
 
 def new_sort_applicants(applicants_sorted_lst: list, c: int) -> dict:
-    """Assign applicants to the proper department first by the first_choice, next second_choice...,
-    sort applicants list inside dict, check if there aren't same applicants in different departments"""
-
-    departments = {'Biotech': [],
-                   'Chemistry': [],
-                   'Engineering': [],
-                   'Mathematics': [],
-                   'Physics': []
-                   }
+    departments = {'Biotech': [], 'Chemistry': [], 'Engineering': [], 'Mathematics': [], 'Physics': []}
     added_applicants = []
-    department_lst = ['Physics', 'Chemistry', 'Biotech', 'Mathematics', 'Engineering']
 
-    def choice(index: int, choice: str) -> None:
-        """Take first N applicants by their  choice form sorted list of each department
-        (chosen by index from list above) and place in departments dict, also check if there aren't
-         same applicants in different departments"""
-
-        for applicant in applicants_sorted_lst[index]:
+    def choice(applicants: list, choice_attr: str) -> None:
+        for applicant in applicants:
             if applicant not in added_applicants:
-                choice_attribute = getattr(applicant, choice)
-                if choice_attribute in department_lst[index] and len(departments[choice_attribute]) < c:
+                choice_attribute = getattr(applicant, choice_attr)
+                if choice_attribute in departments and len(departments[choice_attribute]) < c:
                     departments[choice_attribute].append(applicant)
                     added_applicants.append(applicant)
 
-    # call the function above with indexes proper for department_lst
-    for i in range(0, 5):
-        choice(i, 'first_choice')
-    for i in range(0, 5):
-        choice(i, 'second_choice')
-    for i in range(0, 5):
-        choice(i, 'third_choice')
+    # Call the function for each choice
+    choice(applicants_sorted_lst, 'first_choice')
+    choice(applicants_sorted_lst, 'second_choice')
+    choice(applicants_sorted_lst, 'third_choice')
 
-    # sort lists inside departments dict according to GPA and if score is same by name
+    # Sort lists inside departments dict
     for department, applicants_lst in departments.items():
         score = f"{department.lower()}_score"
-        applicants_lst.sort(key=lambda x: x.name)
-        applicants_lst.sort(key=lambda x: max(x.special_exam_score, getattr(x, score)), reverse=True)
+        applicants_lst.sort(key=lambda x: (-max(getattr(x, score), x.special_exam_score), x.name))
 
     return departments
 
@@ -97,11 +85,18 @@ def save_to_file(departments: dict):
     """Create file with applicants for each department"""
 
     applicant_lst = []
+    # Define filename and path
     for department, applicants in departments.items():
         file_name = department_file_mapping.get(department, 'default.txt')
+        directory = 'data'
+        path = os.path.join(directory, file_name)
+
+        # Check if 'data' directory exist and if not create it
+        if not os.path.exists(directory):
+            os.makedirs(directory)
         try:
             # check if applicant is already saved in file
-            with open(file_name, 'w') as applicants_file:
+            with open(path, 'w') as applicants_file:
                 content = applicants_file.readlines()
                 for line in content:
                     applicant_lst.append(line)
@@ -112,7 +107,7 @@ def save_to_file(departments: dict):
         except FileNotFoundError:
             pass
 
-        with open(file_name, 'a') as applicants_file:
+        with open(path, 'a') as applicants_file:
             for applicant in applicants:
                 # Check if the applicant name is not already in the file
                 if applicant.name not in applicant_lst:
@@ -121,3 +116,5 @@ def save_to_file(departments: dict):
                     else:
                         applicants_file.write(f'{applicant.name} {applicant.special_exam_score}\n')
 
+
+# print(new_sort_applicants(read_file(), 3))
